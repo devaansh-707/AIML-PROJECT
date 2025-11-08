@@ -76,15 +76,19 @@ def validate_training_dataframe(
     config: Dict[str, Any],
 ) -> DataFrameSchema:
     dataset_cfg = config.get("dataset", {})
+    # Support both legacy `dataset.target` and newer `target.name`
+    target_name = dataset_cfg.get("target")
+    if target_name is None:
+        target_name = (config.get("target") or {}).get("name")
     schema = build_schema(
         df,
-        target=dataset_cfg.get("target"),
+        target=target_name,
         required_columns=dataset_cfg.get("required_columns"),
         categorical_overrides=dataset_cfg.get("categorical_overrides"),
         numerical_overrides=dataset_cfg.get("numerical_overrides"),
     )
 
-    schema.validate(df.drop(columns=[dataset_cfg.get("target")], errors="ignore"))
+    schema.validate(df.drop(columns=[target_name], errors="ignore"))
     return schema
 
 

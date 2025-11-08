@@ -15,10 +15,11 @@ from utils import ensure_path
 
 
 def run_inference(cfg: DictConfig):
-    model_path = Path(cfg.model.path)
-    meta_path = Path(cfg.model.meta)
-    input_path = Path(cfg.prediction.input_csv)
-    output_path = Path(cfg.prediction.output_csv)
+    # Prefer new config layout under `paths.*`
+    model_path = Path(cfg.paths.model)
+    meta_path = Path(cfg.paths.meta)
+    input_path = Path(cfg.paths.input)
+    output_path = Path(cfg.paths.output)
 
     if not model_path.exists():
         raise FileNotFoundError(f"Model file not found at {model_path}")
@@ -39,7 +40,11 @@ def run_inference(cfg: DictConfig):
     if missing:
         raise ValueError(f"Missing required columns for inference: {sorted(missing)}")
 
-    threshold = cfg.prediction.threshold
+    # Optional user-provided threshold may live under `prediction.threshold`
+    try:
+        threshold = cfg.prediction.threshold
+    except Exception:
+        threshold = None
     if threshold is None:
         threshold = meta.get("threshold", 0.5)
 

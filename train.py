@@ -75,7 +75,7 @@ def train_pipeline(cfg: DictConfig) -> dict:
     df = pd.read_csv(cfg.paths.train_csv)
     schema = validate_training_dataframe(df, cfg_dict)
 
-    target = cfg.dataset.target
+    target = cfg.target.name
     y = df[target].values
     X = df.drop(columns=[target])
 

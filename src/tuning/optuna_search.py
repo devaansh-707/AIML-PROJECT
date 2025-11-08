@@ -37,7 +37,7 @@ def _suggest_params(trial: optuna.Trial, cfg: DictConfig) -> Dict[str, Any]:
     model_name = cfg.model.name.lower()
     params: Dict[str, Any] = {}
 
-    if model_name == "xgboost":
+    if model_name in {"xgboost", "xgb"}:
         params.update(
             {
                 "model.xgboost.n_estimators": trial.suggest_int("n_estimators", 200, 800),
@@ -61,7 +61,7 @@ def _suggest_params(trial: optuna.Trial, cfg: DictConfig) -> Dict[str, Any]:
                 ),
             }
         )
-    elif model_name == "logistic":
+    elif model_name in {"logistic", "logreg", "lr"}:
         params.update(
             {
                 "model.logistic.C": trial.suggest_float("C", 1e-3, 10.0, log=True)
@@ -83,8 +83,10 @@ def _evaluate(cfg: DictConfig, params: Dict[str, Any], df: pd.DataFrame) -> floa
             container = container[part]
         container[parts[-1]] = value
 
-    X = df.drop(columns=[cfg.dataset.target])
-    y = df[cfg.dataset.target].values
+    # Support target from cfg.target.name
+    target = cfg.target.name
+    X = df.drop(columns=[target])
+    y = df[target].values
 
     pipeline = build_training_pipeline(cfg_copy, y)
     skf = StratifiedKFold(
@@ -102,8 +104,9 @@ def _evaluate(cfg: DictConfig, params: Dict[str, Any], df: pd.DataFrame) -> floa
 
 @main(config_path="../../configs", config_name="train", version_base=None)
 def run(cfg: DictConfig) -> None:
-    if not cfg.optuna.enable:
-        raise RuntimeError("Enable optuna.enable in config to run the search")
+    # Use `tuning.enable` per train.yaml
+    if not cfg.tuning.enable:
+        raise RuntimeError("Enable tuning.enable in config to run the search")
 
     df = _load_data(cfg)
     validate_training_dataframe(df, cfg)
@@ -113,7 +116,10 @@ def run(cfg: DictConfig) -> None:
         return _evaluate(cfg, params, df)
 
     study = optuna.create_study(direction="maximize")
-    study.optimize(objective, n_trials=cfg.optuna.n_trials, timeout=cfg.optuna.timeout)
+    # Map timeout from minutes to seconds if available
+    timeout_minutes = cfg.tuning.get("timeout_minutes", None)
+    timeout_seconds = None if timeout_minutes is None else int(timeout_minutes) * 60
+    study.optimize(objective, n_trials=cfg.tuning.n_trials, timeout=timeout_seconds)
 
     output_dir = Path(cfg.paths.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
