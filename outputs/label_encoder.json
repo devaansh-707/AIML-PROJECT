@@ -1,0 +1,16 @@
+{
+  "classes": [
+    "Arthritis",
+    "Asthma",
+    "Diabetes",
+    "Heart_Disease",
+    "Hypertension"
+  ],
+  "mapping": {
+    "Arthritis": 0,
+    "Asthma": 1,
+    "Diabetes": 2,
+    "Heart_Disease": 3,
+    "Hypertension": 4
+  }
+}

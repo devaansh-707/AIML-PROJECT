@@ -1,0 +1,102 @@
+defaults:
+  - _self_
+
+paths:
+  train_csv: data/train.csv
+  output_dir: outputs
+  model_out: outputs/model.pkl
+  meta_out: outputs/meta.json
+  le_out: outputs/label_encoder.json
+  report_out: outputs/cv_report.json
+  fi_out: outputs/feature_importance.csv
+
+target:
+  name: prognosis
+  multilabel: false
+  multilabel_columns: []  # List of binary disease columns if multilabel=true
+
+dataset:
+  drop_patterns:
+    - "*discharge*"
+    - "*bill*"
+    - "*final*"
+  categorical_overrides: []
+  numerical_overrides: []
+  required_columns: []  # Auto-detect if empty
+
+cv:
+  folds: 5
+  stratify: true
+  group_col: null  # e.g., patient_id for GroupKFold
+  
+metrics:
+  primary: macro_f1  # macro_f1, accuracy, roc_auc_ovr, pr_auc_ovr
+
+features:
+  enable_missing_count: true
+  enable_age_binning: true
+  enable_interactions: false
+  interaction_pairs: []
+  scaler: standard
+
+model:
+  name: xgb  # xgb | logreg
+  random_state: 42
+  calibrate: false
+  top_k: 3  # Show top-k diseases in predictions
+  logistic:
+    C: 1.0
+    penalty: l2
+    solver: lbfgs
+    multi_class: multinomial
+  xgboost:
+    n_estimators: 200
+    learning_rate: 0.1
+    max_depth: 5
+    subsample: 0.8
+    colsample_bytree: 0.8
+    reg_lambda: 1.0
+    gamma: 0.0
+    min_child_weight: 1.0
+    tree_method: auto
+
+imbalance:
+  enable: true
+  scheme: inverse_freq  # inverse_freq | balanced | none
+
+calibration:
+  apply: false
+  methods:
+    - sigmoid
+    - isotonic
+  cv: 5
+
+thresholding:
+  metric: f1
+
+evaluation:
+  metric: roc_auc
+  metrics:
+    - roc_auc
+    - pr_auc
+    - accuracy
+    - precision
+    - recall
+    - f1
+  save_confusion_matrix: true
+
+tuning:
+  enable: false
+  n_trials: 30
+  timeout_minutes: 15
+
+explain:
+  shap_sample: 2000
+  max_display: 20
+  per_sample_top_features: 10
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+

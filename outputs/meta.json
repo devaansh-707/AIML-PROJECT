@@ -1,0 +1,27 @@
+{
+  "task": "multiclass",
+  "target_column": "prognosis",
+  "n_classes": 5,
+  "classes": [
+    "Arthritis",
+    "Asthma",
+    "Diabetes",
+    "Heart_Disease",
+    "Hypertension"
+  ],
+  "model_type": "xgb",
+  "top_k": 3,
+  "features": [
+    "missing_count",
+    "age",
+    "bmi",
+    "heart_rate",
+    "blood_pressure",
+    "cholesterol",
+    "age_bin",
+    "gender_F",
+    "gender_M"
+  ],
+  "cv_accuracy": 0.35,
+  "cv_macro_f1": 0.33462265043502654
+}

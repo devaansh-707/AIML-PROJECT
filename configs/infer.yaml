@@ -1,0 +1,26 @@
+defaults:
+  - _self_
+
+paths:
+  model: outputs/model.pkl
+  meta: outputs/meta.json
+  label_encoder: outputs/label_encoder.json
+  input: data/test.csv
+  output: outputs/submission.csv
+  proba_output: outputs/proba.csv
+
+inference:
+  top_k: 3
+  multilabel_threshold: 0.5  # Used only if multilabel=true
+  batch_size: 4096
+
+explainability:
+  shap_values: outputs/shap_values.csv
+  summary_plot: outputs/shap_summary.png
+  feature_importance: outputs/feature_importance.csv
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+
