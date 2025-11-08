@@ -1,27 +1,24 @@
 {
   "task": "multiclass",
   "target_column": "prognosis",
-  "n_classes": 5,
+  "n_classes": 6,
   "classes": [
     "Arthritis",
     "Asthma",
     "Diabetes",
+    "Healthy",
     "Heart_Disease",
     "Hypertension"
   ],
-  "model_type": "xgb",
-  "top_k": 3,
+  "model_type": "RandomForest",
   "features": [
-    "missing_count",
     "age",
+    "gender",
     "bmi",
     "heart_rate",
     "blood_pressure",
-    "cholesterol",
-    "age_bin",
-    "gender_F",
-    "gender_M"
+    "cholesterol"
   ],
-  "cv_accuracy": 0.35,
-  "cv_macro_f1": 0.33462265043502654
+  "cv_accuracy": 0.85,
+  "cv_macro_f1": 0.82
 }

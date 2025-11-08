@@ -18,13 +18,18 @@ st.set_page_config(page_title="Multi-Disease Prediction Studio", layout="wide")
 @st.cache_resource(show_spinner=False)
 def load_artifacts(model_path: Path, meta_path: Path, le_path: Path):
     """Load model, metadata, and label encoder."""
-    pipeline = joblib.load(model_path)
-    label_encoder = DiseaseLabelEncoder.load(le_path)
-    
-    with open(meta_path, "r", encoding="utf-8") as f:
-        meta = json.load(f)
-    
-    return pipeline, label_encoder, meta
+    try:
+        pipeline = joblib.load(model_path)
+        label_encoder = DiseaseLabelEncoder.load(le_path)
+        
+        with open(meta_path, "r", encoding="utf-8") as f:
+            meta = json.load(f)
+        
+        return pipeline, label_encoder, meta
+    except Exception as e:
+        st.error(f"Error loading artifacts: {str(e)}")
+        st.error(f"Make sure files exist: {model_path}, {meta_path}, {le_path}")
+        raise e
 
 
 def predict_with_topk(pipeline, label_encoder: DiseaseLabelEncoder, X: pd.DataFrame, top_k: int = 3):

@@ -3,6 +3,7 @@
     "Arthritis",
     "Asthma",
     "Diabetes",
+    "Healthy",
     "Heart_Disease",
     "Hypertension"
   ],
@@ -10,7 +11,8 @@
     "Arthritis": 0,
     "Asthma": 1,
     "Diabetes": 2,
-    "Heart_Disease": 3,
-    "Hypertension": 4
+    "Healthy": 3,
+    "Heart_Disease": 4,
+    "Hypertension": 5
   }
 }
